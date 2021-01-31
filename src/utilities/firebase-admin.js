@@ -7,7 +7,7 @@ if (!firebaseAdmin.apps.length) {
       clientEmail: process.env.NEXT_PUBLIC_CLIENT_EMAIL,
       projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
     }),
-    databaseURL: process.emv.NEXT_PUBLIC_DATABASE_URL,
+    databaseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
   });
 }
 
