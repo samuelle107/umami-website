@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import nookies from 'nookies';
 import PropTypes from 'prop-types';
 import { firebase } from '../utilities/firebase';
@@ -17,9 +22,6 @@ function AuthProvider({ children }) {
           nookies.set(undefined, 'token', token, {
             maxAge: 10 * 24 * 60 * 60,
           });
-        } else {
-          setUser(null);
-          nookies.set(undefined, 'token', '');
         }
       }),
     [],
@@ -38,7 +40,9 @@ function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={[user, setUser]}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 

@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
+import nookies from 'nookies';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import Router, { useRouter } from 'next/router';
-import useSWR from 'swr';
-import { motion } from 'framer-motion';
-import { fetcher, toPluralize } from '../../src/utilities';
+import { AuthContext } from '../../src/context-providers/auth-provider';
+import { verifyIdToken } from '../../src/utilities/firebase-admin';
 
 const RecipeWrapper = styled.div`
   display: flex;
@@ -77,30 +76,14 @@ const SubHeader = styled.p`
   font-weight: bold;
 `;
 
-export async function getServerSideProps(context) {
-  try {
-    const recipeResponse = await fetch(
-      `https://umami-back-end.herokuapp.com/recipes/${context.query.id}`,
-    );
-    const recipe = await recipeResponse.json();
+const Recipe = ({ recipe, user }) => {
+  const [authUser, setAuthUser] = useContext(AuthContext);
 
-    return {
-      props: {
-        recipe,
-      },
-    };
-  } catch (error) {
-    return {
-      redirect: {
-        destination: '/404',
-        permanent: false,
-      },
-    };
-  }
-}
-
-const Recipe = ({ recipe }) => {
-  const router = useRouter();
+  useEffect(() => {
+    if (!authUser) {
+      setAuthUser(user);
+    }
+  }, []);
 
   return (
     <RecipeWrapper>
@@ -143,6 +126,38 @@ const Recipe = ({ recipe }) => {
     </RecipeWrapper>
   );
 };
+
+export async function getServerSideProps(context) {
+  let user = null;
+
+  try {
+    const { token } = nookies.get(context);
+    user = await verifyIdToken(token);
+  } catch (error) {
+    nookies.destroy(context, 'token');
+  }
+
+  try {
+    const recipeResponse = await fetch(
+      `https://umami-back-end.herokuapp.com/recipes/${context.query.id}`,
+    );
+    const recipe = await recipeResponse.json();
+
+    return {
+      props: {
+        recipe,
+        user,
+      },
+    };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: '/404',
+        permanent: false,
+      },
+    };
+  }
+}
 
 Recipe.defaultProps = {
   data: {},

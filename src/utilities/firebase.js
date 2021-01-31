@@ -1,5 +1,6 @@
 import firebase from 'firebase';
 import 'firebase/auth';
+import { destroyCookie } from 'nookies';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -30,7 +31,14 @@ export const signOut = (
   handleError = (err) => {
     console.log(err);
   },
-) => firebase.auth().signOut().then(handleSuccess).catch(handleError);
+) => firebase
+  .auth()
+  .signOut()
+  .then(handleSuccess)
+  .then(() => {
+    destroyCookie(null, 'token');
+  })
+  .catch(handleError);
 
 export const db = firebase.firestore();
 

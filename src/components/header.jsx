@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import TextButton from './text-button';
-import { useAuth } from '../context-providers/auth-provider';
+import { AuthContext } from '../context-providers/auth-provider';
+import { signOut } from '../utilities/firebase';
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -19,6 +20,10 @@ const Title = styled.h4``;
 const LinkContainer = styled.div`
   display: flex;
   align-items: center;
+
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -27,9 +32,15 @@ const ButtonWrapper = styled.div`
 
 const Header = () => {
   const router = useRouter();
-  const { user } = useAuth();
   const { route } = router;
   const isCurrentRoute = (currentRoute) => route === currentRoute;
+  const [user, setUser] = useContext(AuthContext);
+
+  const onLoginLogOutClick = () => {
+    if (user) {
+      signOut(() => setUser(null));
+    }
+  };
 
   return (
     <HeaderWrapper>
@@ -59,9 +70,13 @@ const Header = () => {
             <TextButton isActive={isCurrentRoute('/about')}>About</TextButton>
           </ButtonWrapper>
         </Link>
-        <Link href="/login" passHref>
+        <Link href={user ? '/' : '/login'} passHref>
           <ButtonWrapper>
-            <TextButton isActive={isCurrentRoute('/login')}>
+            <TextButton
+              isActive={isCurrentRoute('/login')}
+              onClick={onLoginLogOutClick}
+              type={user ? 'error' : undefined}
+            >
               {user ? 'Logout' : 'Login'}
             </TextButton>
           </ButtonWrapper>

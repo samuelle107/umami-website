@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 const RecipeCardWrapper = styled(motion.div)`
-  flex-basis: calc((100%) - 64px);
+  flex-basis: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

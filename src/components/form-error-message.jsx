@@ -13,13 +13,15 @@ const FormErrorMessage = ({ errors, name }) => {
     if (!errors || Object.keys(errors).length === 0) {
       return null;
     }
+
     const error = name.split('.').reduce((p, prop) => p[prop], errors);
+
     if (!error) {
       return null;
     }
 
     return (
-      <ErrorMessage>{error.message}</ErrorMessage>
+      <ErrorMessage>{error.message.charAt(0).toUpperCase() + error.message.slice(1)}</ErrorMessage>
     );
   } catch (err) {
     return null;
@@ -27,7 +29,7 @@ const FormErrorMessage = ({ errors, name }) => {
 };
 
 FormErrorMessage.propTypes = {
-  errors: PropTypes.array.isRequired,
+  errors: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,
 };
 

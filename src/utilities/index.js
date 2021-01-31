@@ -15,3 +15,10 @@ export const fetcher = async (url) => {
 export const test = () => 12;
 
 export const toPluralize = (baseWord, quantity) => (quantity !== 1 ? `${baseWord}s` : baseWord);
+
+export const capitalize = (word) => word.split(' ').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+export const convertTagToOptions = (recipeTags) => recipeTags.map((recipeTag) => ({
+  value: recipeTag.tag.split(' ').join('-'),
+  label: capitalize(recipeTag.tag),
+}));

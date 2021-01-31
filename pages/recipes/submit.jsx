@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import nookies from 'nookies';
 import PropTypes from 'prop-types';
@@ -12,6 +12,8 @@ import firebaseAdmin from '../../src/utilities/firebase-admin';
 import Button from '../../src/components/button';
 import TextButton from '../../src/components/text-button';
 import ErrorMessage from '../../src/components/form-error-message';
+import { convertTagToOptions } from '../../src/utilities';
+import { AuthContext } from '../../src/context-providers/auth-provider';
 
 const SubmitWrapper = styled.div`
   display: flex;
@@ -79,32 +81,15 @@ const validationSchema = yup.object().shape({
   cuisine: yup.object().required(),
 });
 
-export async function getServerSideProps(context) {
-  try {
-    const cookies = nookies.get(context);
-    const token = await firebaseAdmin.auth().verifyIdToken(cookies.token);
-    const { uid, email, name } = token;
+const Submit = ({ userData, tags }) => {
+  const [authUser, setAuthUser] = useContext(AuthContext);
 
-    return {
-      props: {
-        userData: {
-          email,
-          uid,
-          author: name,
-        },
-      },
-    };
-  } catch (err) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-}
+  useEffect(() => {
+    if (!authUser) {
+      setAuthUser(userData);
+    }
+  }, []);
 
-const Submit = ({ userData }) => {
   const router = useRouter();
   const { control, errors, handleSubmit, register } = useForm({
     resolver: yupResolver(validationSchema),
@@ -142,14 +127,17 @@ const Submit = ({ userData }) => {
     };
 
     try {
-      const result = await fetch('https://umami-back-end.herokuapp.com/recipes', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postBody),
-      });
+      const result = await fetch(
+        'https://umami-back-end.herokuapp.com/recipes',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postBody),
+        }
+      );
       const { id } = await result.json();
 
       router.push(`/recipes/${id}`);
@@ -288,11 +276,7 @@ const Submit = ({ userData }) => {
             <Controller
               name="meal"
               control={control}
-              options={[
-                { value: 'breakfast', label: 'Breakfast' },
-                { value: 'lunch', label: 'Lunch' },
-                { value: 'dinner', label: 'Dinner' },
-              ]}
+              options={convertTagToOptions(tags.mealTags)}
               as={Select}
             />
             <ErrorMessage errors={errors} name="meal" />
@@ -304,11 +288,7 @@ const Submit = ({ userData }) => {
               name="dietaryPreferences"
               control={control}
               isMulti
-              options={[
-                { value: 'seconds', label: 'Seconds' },
-                { value: 'minutes', label: 'Minutes' },
-                { value: 'hours', label: 'Hours' },
-              ]}
+              options={convertTagToOptions(tags.dietaryPreferenceTags)}
               as={CreatableSelect}
             />
             <Hint>
@@ -318,11 +298,7 @@ const Submit = ({ userData }) => {
             <Controller
               name="cuisine"
               control={control}
-              options={[
-                { value: 'american', label: 'American' },
-                { value: 'japanese', label: 'Japanese' },
-                { value: 'vietnamese', label: 'Vietnamese' },
-              ]}
+              options={convertTagToOptions(tags.cuisineTags)}
               as={CreatableSelect}
             />
             <ErrorMessage errors={errors} name="cuisine" />
@@ -349,6 +325,43 @@ const Submit = ({ userData }) => {
     </SubmitWrapper>
   );
 };
+
+export async function getServerSideProps(context) {
+  let tags = {
+    cuisineTags: [],
+    dietaryPreferenceTags: [],
+    mealTags: [],
+  };
+
+  try {
+    const tagsResponse = await fetch(
+      'https://umami-back-end.herokuapp.com/tags'
+    );
+    tags = await tagsResponse.json();
+  } catch (error) {
+    console.log(error);
+  }
+
+  try {
+    const cookies = nookies.get(context);
+    const user = await firebaseAdmin.auth().verifyIdToken(cookies.token);
+
+    return {
+      props: {
+        userData: user,
+        tags,
+      },
+    };
+  } catch (err) {
+    nookies.destroy(context, 'token');
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+}
 
 Submit.defaultProps = {
   userData: {

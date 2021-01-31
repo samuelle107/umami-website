@@ -23,26 +23,6 @@ const HeaderStyled = styled.h2`
   font-size: 24px;
 `;
 
-export async function getServerSideProps(context) {
-  try {
-    const cookies = nookies.get(context);
-    await firebaseAdmin.auth().verifyIdToken(cookies.token);
-
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  } catch (err) {
-    return {
-      props: {
-        data: null,
-      },
-    };
-  }
-}
-
 const Login = () => {
   const router = useRouter();
 
@@ -61,5 +41,26 @@ const Login = () => {
     </LoginContainer>
   );
 };
+
+export async function getServerSideProps(context) {
+  try {
+    const cookies = nookies.get(context);
+    await firebaseAdmin.auth().verifyIdToken(cookies.token);
+
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  } catch (err) {
+    nookies.destroy(context, 'token');
+    return {
+      props: {
+        data: null,
+      },
+    };
+  }
+}
 
 export default Login;
