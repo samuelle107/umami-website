@@ -29,7 +29,7 @@ export const signOut = (
   handleSuccess = () => {},
   handleError = (err) => {
     console.log(err);
-  }
+  },
 ) => firebase.auth().signOut().then(handleSuccess).catch(handleError);
 
 export const db = firebase.firestore();
