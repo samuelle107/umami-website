@@ -5,7 +5,7 @@ import { signInWithGoogle } from '../utilities/firebase';
 const GoogleSignInButtonStyled = styled.button`
   background-color: #4285f4;
   width: 100%;
-  height: 40px;
+  min-height: 40px;
   box-sizing: border-box;
   padding: 10px 16px;
   text-decoration: none;

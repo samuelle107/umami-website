@@ -39,12 +39,8 @@ const SubHeading = styled(motion.h4)``;
 
 const Info = styled(motion.p)``;
 
-const Home = (props) => (
-  <div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-  >
+const Home = () => (
+  <div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
     <HomeWrapper>
       <InfoColumn>
         <Title

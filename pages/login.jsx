@@ -15,7 +15,7 @@ const LoginContainer = styled.div`
 `;
 
 const FormStyled = styled.div`
-  width: 420px;
+  width: min(80%, 420px);
 `;
 
 const HeaderStyled = styled.h2`

@@ -3,7 +3,6 @@ import nookies from 'nookies';
 import styled from 'styled-components';
 import RecipeFilter from '../src/components/recipe-filter';
 import RecipeCard from '../src/components/recipe-card';
-import { fetcher } from '../src/utilities';
 import firebaseAdmin from '../src/utilities/firebase-admin';
 
 const ExploreWrapper = styled.div`
@@ -19,11 +18,12 @@ const RecipesWrapper = styled.div`
 `;
 
 export async function getServerSideProps(context) {
+  const errors = [];
   try {
     const { token } = nookies.get(context);
     await firebaseAdmin.auth().verifyIdToken(token);
   } catch (error) {
-    console.log(error);
+    errors.push(error);
   }
 
   try {
@@ -44,9 +44,12 @@ export async function getServerSideProps(context) {
       dietaryPreferenceTags: [],
       mealTags: [],
     };
+
+    errors.push(error);
+
     return {
       props: {
-        err: JSON.stringify(error),
+        err: errors,
         tags,
         recipes: [],
       },
