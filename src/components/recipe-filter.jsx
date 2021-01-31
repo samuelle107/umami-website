@@ -29,13 +29,14 @@ const RecipeFilter = ({ tags, getSelectedTags }) => {
     getSelectedTags({ cuisineTags, dietaryTags, mealTags });
   }, [cuisineTags, dietaryTags, mealTags]);
 
-  const createOptions = (recipeTags) => recipeTags.map((tag) => ({
-    value: tag, label: tag.charAt(0).toUpperCase() + tag.slice(1),
+  const createOptions = (recipeTags) => recipeTags.map((recipeTag) => ({
+    value: recipeTag.tag,
+    label: recipeTag.tag.charAt(0).toUpperCase() + recipeTag.tag.slice(1),
   }));
 
-  const cuisineOptions = createOptions(tags.cuisine.tags);
-  const mealOptions = createOptions(tags.meal.tags);
-  const dietaryPreferenceOptions = createOptions(tags.dietaryPreference.tags);
+  const cuisineOptions = createOptions(tags.cuisineTags);
+  const mealOptions = createOptions(tags.mealTags);
+  const dietaryPreferenceOptions = createOptions(tags.dietaryPreferenceTags);
 
   return (
     <RecipeFilterWrapper>
@@ -48,7 +49,11 @@ const RecipeFilter = ({ tags, getSelectedTags }) => {
           <Select options={mealOptions} placeholder="Meal" />
         </SelectWrapper>
         <SelectWrapper width={250}>
-          <Select options={dietaryPreferenceOptions} placeholder="Dietary Preferences" isMulti />
+          <Select
+            options={dietaryPreferenceOptions}
+            placeholder="Dietary Preferences"
+            isMulti
+          />
         </SelectWrapper>
       </SelectContainer>
     </RecipeFilterWrapper>

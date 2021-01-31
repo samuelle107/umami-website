@@ -27,27 +27,22 @@ export async function getServerSideProps(context) {
   }
 
   try {
-    // const tags = await fetcher('http://localhost:3000/api/tags');
+    const tagsResponse = await fetch('https://umami-back-end.herokuapp.com/tags');
+    const tags = await tagsResponse.json();
     const recipesResponse = await fetch('https://umami-back-end.herokuapp.com/recipes');
     const recipes = await recipesResponse.json();
 
     return {
       props: {
         recipes,
-        tags: [],
+        tags,
       },
     };
   } catch (error) {
     const tags = {
-      cuisine: {
-        tags: [],
-      },
-      dietaryPreference: {
-        tags: [],
-      },
-      meal: {
-        tags: [],
-      },
+      cuisineTags: [],
+      dietaryPreferenceTags: [],
+      mealTags: [],
     };
     return {
       props: {
