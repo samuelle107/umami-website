@@ -16,7 +16,9 @@ function AuthProvider({ children }) {
     if (currentUser) {
       const token = await currentUser.getIdToken();
       setUser(currentUser);
-      nookies.set(undefined, 'token', token);
+      nookies.set(undefined, 'token', token, {
+        maxAge: 10 * 24 * 60 * 60,
+      });
     } else {
       setUser(null);
       nookies.set(undefined, 'token', '');
