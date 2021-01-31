@@ -13,7 +13,7 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 }
 
 const provider = new firebase.auth.GoogleAuthProvider();
