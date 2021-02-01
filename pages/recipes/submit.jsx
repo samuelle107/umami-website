@@ -82,7 +82,6 @@ const validationSchema = yup.object().shape({
 });
 
 const Submit = ({ userData, tags }) => {
-  console.log(userData);
   const [authUser, setAuthUser] = useContext(AuthContext);
 
   useEffect(() => {
@@ -279,7 +278,7 @@ const Submit = ({ userData, tags }) => {
               name="meal"
               control={control}
               options={convertTagToOptions(tags.mealTags)}
-              as={Select}
+              as={CreatableSelect}
             />
             <ErrorMessage errors={errors} name="meal" />
             <Hint>
