@@ -2,7 +2,6 @@ import React, { useEffect, useContext } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import nookies from 'nookies';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { useRouter } from 'next/router';

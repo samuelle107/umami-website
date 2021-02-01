@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { AuthContext } from '../../src/context-providers/auth-provider';
 import { verifyIdToken } from '../../src/utilities/firebase-admin';
+import { toPluralize } from '../../src/utilities';
 
 const RecipeWrapper = styled.div`
   display: flex;
@@ -92,6 +93,9 @@ const Recipe = ({ recipe, user }) => {
           <div>
             <Title>{recipe.title}</Title>
             <Author>{`By ${recipe.author}`}</Author>
+            <Logistics>
+              {`This will make approximately ${recipe.servingSize} ${toPluralize('serving', recipe.servingSize)}.`}
+            </Logistics>
           </div>
         </DetailsWrapper>
         <ImageWrapper>
