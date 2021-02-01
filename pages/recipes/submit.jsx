@@ -127,7 +127,6 @@ const Submit = ({ userData, tags }) => {
           dietaryPreferences?.map((item) => item.value.toLowerCase()) || [],
       },
     };
-    console.log(postBody)
 
     try {
       const result = await fetch(
