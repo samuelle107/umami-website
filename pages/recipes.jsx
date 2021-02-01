@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import nookies from 'nookies';
 import styled from 'styled-components';
+import useSWR from 'swr';
 import RecipeFilter from '../src/components/recipe-filter';
 import RecipeCard from '../src/components/recipe-card';
 import firebaseAdmin from '../src/utilities/firebase-admin';
@@ -18,9 +19,45 @@ const RecipesWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const Recipes = ({ tags, recipes, user }) => {
-  const [allTags, setAllTags] = useState([]);
+const queryBuilder = (allTags) => {
+  const queries = [];
+  const { cuisine, dietaryPreferences, meal } = allTags;
+
+  if (cuisine.length) {
+    queries.push(`cuisine=${cuisine}`);
+  }
+
+  if (meal.length) {
+    queries.push(`meal=${meal}`);
+  }
+
+  if (dietaryPreferences.length) {
+    dietaryPreferences.forEach((item) => queries.push(`dietaryPreferences=${item}`));
+  }
+
+  return queries.length ? `/?${queries.join('&')}` : '';
+};
+
+const Recipes = ({ tags, allRecipes, user }) => {
+  const [allTags, setAllTags] = useState({
+    cuisine: '',
+    dietaryPreferences: [],
+    meal: '',
+  });
+  const [recipes, setRecipes] = useState([]);
   const [authUser, setAuthUser] = useContext(AuthContext);
+  const { data } = useSWR(
+    `https://umami-back-end.herokuapp.com/recipes${queryBuilder(allTags)}`,
+    (url) => fetch(url).then((res) => res.json()),
+  );
+
+  useEffect(() => {
+    setRecipes(allRecipes);
+  }, []);
+
+  useEffect(() => {
+    setRecipes(data || []);
+  }, [data]);
 
   useEffect(() => {
     if (!authUser) {
@@ -35,7 +72,7 @@ const Recipes = ({ tags, recipes, user }) => {
       exit={{ opacity: 0 }}
     >
       <ExploreWrapper>
-        <RecipeFilter tags={tags} getSelectedTags={() => {}} />
+        <RecipeFilter tags={tags} getSelectedTags={(value) => setAllTags(value)} />
         <RecipesWrapper>
           {recipes.map((recipe, i) => (
             <RecipeCard key={recipe._id} recipe={recipe} index={i} />
@@ -66,7 +103,7 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        recipes,
+        allRecipes: recipes,
         tags,
         user,
       },
@@ -83,7 +120,7 @@ export async function getServerSideProps(context) {
     return {
       props: {
         err: errors,
-        recipes: [],
+        allRecipes: [],
         tags,
         user,
       },

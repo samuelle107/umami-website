@@ -21,12 +21,16 @@ const SelectWrapper = styled.div`
 `;
 
 const RecipeFilter = ({ tags, getSelectedTags }) => {
-  const [cuisineTags, setCuisineTags] = useState([]);
+  const [cuisineTags, setCuisineTags] = useState('');
   const [dietaryTags, setDietaryTags] = useState([]);
-  const [mealTags, setMealTags] = useState([]);
+  const [mealTags, setMealTags] = useState('');
 
   useEffect(() => {
-    getSelectedTags({ cuisineTags, dietaryTags, mealTags });
+    getSelectedTags({
+      cuisine: cuisineTags,
+      dietaryPreferences: dietaryTags,
+      meal: mealTags,
+    });
   }, [cuisineTags, dietaryTags, mealTags]);
 
   const createOptions = (recipeTags) => recipeTags.map((recipeTag) => ({
@@ -43,16 +47,25 @@ const RecipeFilter = ({ tags, getSelectedTags }) => {
       <FilterMessage>Filter recipes by:</FilterMessage>
       <SelectContainer>
         <SelectWrapper width={150}>
-          <Select options={cuisineOptions} placeholder="Cuisine" />
+          <Select
+            options={cuisineOptions}
+            placeholder="Cuisine"
+            onChange={(option) => setCuisineTags(option.value)}
+          />
         </SelectWrapper>
         <SelectWrapper width={150}>
-          <Select options={mealOptions} placeholder="Meal" />
+          <Select
+            options={mealOptions}
+            placeholder="Meal"
+            onChange={(option) => setMealTags(option.value)}
+          />
         </SelectWrapper>
         <SelectWrapper width={250}>
           <Select
             options={dietaryPreferenceOptions}
             placeholder="Dietary Preferences"
             isMulti
+            onChange={(options) => setDietaryTags(options?.map((option) => option.value) || [])}
           />
         </SelectWrapper>
       </SelectContainer>
