@@ -82,6 +82,7 @@ const validationSchema = yup.object().shape({
 });
 
 const Submit = ({ userData, tags }) => {
+  console.log(userData);
   const [authUser, setAuthUser] = useContext(AuthContext);
 
   useEffect(() => {
@@ -118,6 +119,7 @@ const Submit = ({ userData, tags }) => {
     };
     const postBody = {
       ...remainingData,
+      author: remainingData.name,
       tags: {
         meal: meal.value.toLowerCase(),
         cuisine: cuisine.value.toLowerCase(),
@@ -125,6 +127,7 @@ const Submit = ({ userData, tags }) => {
           dietaryPreferences?.map((item) => item.value.toLowerCase()) || [],
       },
     };
+    console.log(postBody)
 
     try {
       const result = await fetch(
